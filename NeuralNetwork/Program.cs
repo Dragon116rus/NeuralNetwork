@@ -10,6 +10,12 @@ namespace NeuralNetwork
     {
         static void Main(string[] args)
         {
+            NeuralNetwork nn = new NeuralNetwork(2,5,5,5, 2);
+            var res=nn.getResult(1, 3);
+            foreach(var i in res)
+            {
+                Console.WriteLine(i);
+            }
         }
     }
 }
