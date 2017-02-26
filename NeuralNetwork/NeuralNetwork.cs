@@ -69,76 +69,41 @@ namespace NeuralNetwork
         {
             int countOfLayers = network.Length;
 
-            if (countOfLayers > 1)
+            for (int numberOfLayer = 0; numberOfLayer < countOfLayers - 1; numberOfLayer++)
             {
-                Neuron[] mainLayer = network[0];
-                Neuron[] nextLayer = network[1];
+                Neuron[] mainLayer = network[numberOfLayer];
+                Neuron[] nextLayer = network[numberOfLayer+1];
                 for (int numberOfNeuronOfMainLayer = 0; numberOfNeuronOfMainLayer < mainLayer.Length; numberOfNeuronOfMainLayer++)
                 {
                     Neuron neuronOfMainLayer = mainLayer[numberOfNeuronOfMainLayer];
+
                     int countOfOutSynapsises = nextLayer.Length - countOfConstantNeurons(ref nextLayer);
+                    int countOfInSynapsises = mainLayer.Length;
+
                     neuronOfMainLayer.outSynapsises = new Synapsis[countOfOutSynapsises];
+                   
+
                     for (int numberOfNeuronfOfNextLayer = 0; numberOfNeuronfOfNextLayer < countOfOutSynapsises; numberOfNeuronfOfNextLayer++)
                     {
                         Neuron neuronOfNextLayer = nextLayer[numberOfNeuronfOfNextLayer];
-                        neuronOfMainLayer.outSynapsises[numberOfNeuronfOfNextLayer] = new Synapsis(neuronOfMainLayer, neuronOfNextLayer);
-
-                    }
-                }
-
-                mainLayer = network[countOfLayers - 1];
-                Neuron[] prevLayer = network[countOfLayers - 2];
-                for (int numberOfNeuronOfMainLayer = 0; numberOfNeuronOfMainLayer < mainLayer.Length; numberOfNeuronOfMainLayer++)
-                {
-                    Neuron neuronOfMainLayer = mainLayer[numberOfNeuronOfMainLayer];
-                    if (!(neuronOfMainLayer is ConstantNeuron))
-                    {
-                        int countOfInSyanpsises = prevLayer.Length;
-                        neuronOfMainLayer.inSynapsises = new Synapsis[prevLayer.Length];
-                        for (int numberOfNeuronOfPrevLayer = 0; numberOfNeuronOfPrevLayer < prevLayer.Length; numberOfNeuronOfPrevLayer++)
+                        if (neuronOfNextLayer.inSynapsises == null)
                         {
-                            Neuron neuronOfPrevLayer = prevLayer[numberOfNeuronOfPrevLayer];
-                            neuronOfMainLayer.inSynapsises[numberOfNeuronOfPrevLayer] = new Synapsis(neuronOfPrevLayer, neuronOfMainLayer);
+                            neuronOfNextLayer.inSynapsises = new Synapsis[countOfInSynapsises];
                         }
+                        Synapsis synapsis = new Synapsis(neuronOfMainLayer, neuronOfNextLayer);
+                        neuronOfMainLayer.outSynapsises[numberOfNeuronfOfNextLayer] = synapsis;
+                        neuronOfNextLayer.inSynapsises[numberOfNeuronOfMainLayer] = synapsis;
+
                     }
                 }
             }
-            for (int numberOfLayer = 1; numberOfLayer < countOfLayers - 1; numberOfLayer++)
-            {
-                Neuron[] prevLayer = network[numberOfLayer - 1];
-                Neuron[] mainLayer = network[numberOfLayer];
-                Neuron[] nextLayer = network[numberOfLayer + 1];
-                for (int numberOfNeuronOfMainLevel = 0; numberOfNeuronOfMainLevel < mainLayer.Length; numberOfNeuronOfMainLevel++)
-                {
-                    Neuron neuronOfMainLayer = mainLayer[numberOfNeuronOfMainLevel];
-                    if (!(neuronOfMainLayer is ConstantNeuron))
-                    {
-                        int countOfInSyanpsises = prevLayer.Length;
-                        neuronOfMainLayer.inSynapsises = new Synapsis[countOfInSyanpsises];
-                        for (int numberOfNeuronOfPrevLayer = 0; numberOfNeuronOfPrevLayer < countOfInSyanpsises; numberOfNeuronOfPrevLayer++)
-                        {
-                            Neuron neuronOfPrevLayer = prevLayer[numberOfNeuronOfPrevLayer];
-                            neuronOfMainLayer.inSynapsises[numberOfNeuronOfPrevLayer] = new Synapsis(neuronOfPrevLayer, neuronOfMainLayer);
-                        }
-                    }
-
-                    int countOfOutSynapsises = nextLayer.Length - countOfConstantNeurons(ref nextLayer);
-                    neuronOfMainLayer.outSynapsises = new Synapsis[countOfOutSynapsises];
-                    for (int numberOfNeuronOfNextLayer = 0; numberOfNeuronOfNextLayer < countOfOutSynapsises; numberOfNeuronOfNextLayer++)
-                    {
-                        Neuron neuronOfNextLayer = nextLayer[numberOfNeuronOfNextLayer];
-                        neuronOfMainLayer.outSynapsises[numberOfNeuronOfNextLayer] = new Synapsis(neuronOfMainLayer, neuronOfNextLayer);
-                    }
-                }
-            }
-
-
+            
         }
 
         private int countOfConstantNeurons(ref Neuron[] layer)
         {
             int count = 0;
-            foreach(var neuron in layer)
+            foreach (var neuron in layer)
             {
                 if (neuron is ConstantNeuron)
                 {
@@ -172,11 +137,11 @@ namespace NeuralNetwork
 
         }
 
-        public void train(double[] inputData,double[] desiredData,double learningDataRate,double momentumConstant=0)
+        public void train(double[] inputData, double[] desiredData, double learningDataRate, double momentumConstant = 0)
         {
             double[] outputData = getResult(inputData);
-           // double[] errors = getErrorSignal(desiredData, outputData);
-        //    updateSynapsisesWeight(errors, learningDataRate, momentumConstant);
+            // double[] errors = getErrorSignal(desiredData, outputData);
+            //    updateSynapsisesWeight(errors, learningDataRate, momentumConstant);
         }
 
         private void updateSynapsisesWeight(double[] errors, double learningDataRate, double momentumConstant)
@@ -219,7 +184,7 @@ namespace NeuralNetwork
 
         private void getLocalGradientsForHiddenLayer()
         {
-            for (int numberOfLayer = 1; numberOfLayer < network.Length-1; numberOfLayer++)
+            for (int numberOfLayer = 1; numberOfLayer < network.Length - 1; numberOfLayer++)
             {
                 Neuron[] layer = network[numberOfLayer];
                 for (int numberOfNeuron = 0; numberOfNeuron < layer.Length; numberOfNeuron++)
@@ -227,14 +192,14 @@ namespace NeuralNetwork
                     if (layer[numberOfNeuron] is HiddenNeuron)
                     {
                         HiddenNeuron neuron = layer[numberOfNeuron] as HiddenNeuron;
-                      //  neuron.localGradient=neuron.derivativeOfActivationFunction(neuron.getInducedLocalField())*
+                        //  neuron.localGradient=neuron.derivativeOfActivationFunction(neuron.getInducedLocalField())*
 
                     }
                     else
                     {
                         throw new Exception("Нейрон не того типа в выходном слое");
                     }
-                } 
+                }
             }
         }
 
@@ -245,7 +210,7 @@ namespace NeuralNetwork
             {
                 Synapsis synapsis = neuron.inSynapsises[numberOfSynapsises];
                 synapsis.weight = momentumConstant * synapsis.prevDeltaWeight +
-                    learningDataRate *(double) neuron.localGradient * (double)neuron.weight;
+                    learningDataRate * (double)neuron.localGradient * (double)neuron.weight;
             }
         }
     }
