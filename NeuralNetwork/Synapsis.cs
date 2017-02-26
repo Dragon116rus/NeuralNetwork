@@ -1,8 +1,17 @@
-﻿namespace NeuralNetwork
+﻿using System;
+
+namespace NeuralNetwork
 {
     internal class Synapsis
     {
-        public Synapsis(Neuron inNeuron, Neuron outNeuron, double weight = 1)
+        private static Random random;
+        public Synapsis(Neuron inNeuron, Neuron outNeuron)
+        {
+            this.inNeuron = inNeuron;
+            this.outNeuron = outNeuron;
+            this.weight_ = random.NextDouble() - 0.5;
+        }
+        public Synapsis(Neuron inNeuron, Neuron outNeuron,double weight)
         {
             this.inNeuron = inNeuron;
             this.outNeuron = outNeuron;

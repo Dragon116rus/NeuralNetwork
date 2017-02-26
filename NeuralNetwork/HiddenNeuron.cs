@@ -10,8 +10,8 @@ namespace NeuralNetwork
     {
         public HiddenNeuron()
         {
-            activationFunction = functions.linearWithoutKoef;
-            derivativeOfActivationFunction = functions.derivativeOfLinearWithoutKoef;
+            activationFunction = functions.tanh;
+            derivativeOfActivationFunction = functions.derivativeOfTanh;
         }
         public delegate double ActivationFunction(double value);
         public ActivationFunction activationFunction;

@@ -21,7 +21,7 @@ namespace NeuralNetwork
                 {
                     Console.WriteLine(b);
                 }
-                nn.train(oo, oo, 0.5);
+                nn.train(oo, oo, 0.5,0.2);
             }
         }
     }
