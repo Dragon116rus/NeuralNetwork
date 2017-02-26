@@ -7,11 +7,7 @@
             this.inNeuron = inNeuron;
             this.outNeuron = outNeuron;
             this.weight_ = weight;
-            id1 = id;
-            id++;
         }
-        private static int id=0;
-        private int id1;
         private double weight_;
         public double weight
         {
