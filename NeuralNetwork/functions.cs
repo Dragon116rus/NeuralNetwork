@@ -22,7 +22,7 @@ namespace NeuralNetwork
         }
         public static double derivativeOfTanh(double value)
         {
-            return Math.Sinh(value);
+            return Math.Pow(Math.Sinh(value),2);
         }
     }
 }

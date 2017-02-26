@@ -10,8 +10,8 @@ namespace NeuralNetwork
     {
         public HiddenNeuron()
         {
-            activationFunction = functions.tanh;
-            derivativeOfActivationFunction = functions.derivativeOfTanh;
+            activationFunction = functions.linearWithoutKoef;
+            derivativeOfActivationFunction = functions.derivativeOfLinearWithoutKoef;
         }
         public delegate double ActivationFunction(double value);
         public ActivationFunction activationFunction;
@@ -21,9 +21,28 @@ namespace NeuralNetwork
         public double getInducedLocalField()
         {
             double sum = 0;
-            foreach (var synapsis in inSynapsises)
+            if (inSynapsises != null)
             {
-                sum += (double)(synapsis.weight * synapsis.inNeuron.weight);
+                foreach (var synapsis in inSynapsises)
+                {
+                    sum += (double)(synapsis.weight * synapsis.inNeuron.weight);
+                }
+            }
+            return sum;
+        }
+        public double getDerivivativeOfSqrErrorEnergy()
+        {
+            double sum = 0;
+            foreach (var synapsis in outSynapsises)
+            {
+                if (synapsis.outNeuron is HiddenNeuron)
+                {
+                    sum += synapsis.weight * (double)(synapsis.outNeuron as HiddenNeuron).localGradient;
+                }
+                else
+                {
+                    throw new Exception("Не тот тип нейрона");
+                }
             }
             return sum;
         }

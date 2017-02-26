@@ -10,11 +10,18 @@ namespace NeuralNetwork
     {
         static void Main(string[] args)
         {
-            NeuralNetwork nn = new NeuralNetwork(2,5,5,5, 2);
-            var res=nn.getResult(1, 3);
-            foreach(var i in res)
+            NeuralNetwork nn = new NeuralNetwork(1,1,1);
+
+            double[] oo = { 0 };
+            for (int i = 0; i < 5; i++)
             {
-                Console.WriteLine(i);
+                
+                var res = nn.getResult(0);
+                foreach (var b in res)
+                {
+                    Console.WriteLine(b);
+                }
+                nn.train(oo, oo, 0.5);
             }
         }
     }

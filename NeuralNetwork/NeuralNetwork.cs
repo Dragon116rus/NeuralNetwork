@@ -47,20 +47,21 @@ namespace NeuralNetwork
                             }
                         }
                     }
-                }
-
+                }                
             }
+            initSynapsises();
         }
         public double[] getResult(params double[] weights)
         {
             cleanWeights();
             initInputWeight(weights);
-            initSynapsises();
+            
             int sizeOfOutputLayer = network[network.Length - 1].Length;
+            Neuron[] outputLayer = network[network.Length - 1];
             double[] result = new double[sizeOfOutputLayer];
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = (double)network[sizeOfOutputLayer - 1][i].weight;
+                result[i] = (double)outputLayer[i].weight;
             }
             return result;
         }
@@ -140,15 +141,25 @@ namespace NeuralNetwork
         public void train(double[] inputData, double[] desiredData, double learningDataRate, double momentumConstant = 0)
         {
             double[] outputData = getResult(inputData);
-            // double[] errors = getErrorSignal(desiredData, outputData);
-            //    updateSynapsisesWeight(errors, learningDataRate, momentumConstant);
+            double[] errors = getErrorSignal(desiredData, outputData);
+            updateSynapsisesWeight(errors, learningDataRate, momentumConstant);
+        }
+
+        private double[] getErrorSignal(double[] desiredData, double[] outputData)
+        {
+            double[] errorSignal =new double[desiredData.Length];
+            for (int i = 0; i < errorSignal.Length; i++)
+            {
+                errorSignal[i] = desiredData[i] - outputData[i];
+            }
+            return errorSignal;
         }
 
         private void updateSynapsisesWeight(double[] errors, double learningDataRate, double momentumConstant)
         {
             getLocalGradientsForOutputLayer(errors);
             getLocalGradientsForHiddenLayer();
-            for (int numberOfLayer = 1; numberOfLayer < network.Length; numberOfLayer++)
+            for (int numberOfLayer = network.Length-1; numberOfLayer > 0; numberOfLayer--)
             {
                 Neuron[] layer = network[numberOfLayer];
                 for (int numberOfNeuron = 0; numberOfNeuron < layer.Length; numberOfNeuron++)
@@ -159,7 +170,10 @@ namespace NeuralNetwork
                     }
                     else
                     {
-                        throw new Exception("Нейрон не того типа");
+                        if (!(layer[numberOfNeuron] is ConstantNeuron))
+                        {
+                            throw new Exception("Нейрон не того типа");
+                        }
                     }
                 }
             }
@@ -176,7 +190,7 @@ namespace NeuralNetwork
                     neuron.localGradient = errors[numberOfNeuron] * neuron.derivativeOfActivationFunction(neuron.getInducedLocalField());
                 }
                 else
-                {
+                {                    
                     throw new Exception("Нейрон не того типа в выходном слое");
                 }
             }
@@ -192,12 +206,15 @@ namespace NeuralNetwork
                     if (layer[numberOfNeuron] is HiddenNeuron)
                     {
                         HiddenNeuron neuron = layer[numberOfNeuron] as HiddenNeuron;
-                        //  neuron.localGradient=neuron.derivativeOfActivationFunction(neuron.getInducedLocalField())*
-
+                        neuron.localGradient = neuron.derivativeOfActivationFunction(neuron.getInducedLocalField()) *
+                            neuron.getDerivivativeOfSqrErrorEnergy();
                     }
                     else
                     {
-                        throw new Exception("Нейрон не того типа в выходном слое");
+                        if (!(layer[numberOfNeuron] is ConstantNeuron))
+                        {
+                            throw new Exception("Нейрон не того типа в выходном слое");
+                        }
                     }
                 }
             }
@@ -209,7 +226,7 @@ namespace NeuralNetwork
             for (int numberOfSynapsises = 0; numberOfSynapsises < countOfSynapsises; numberOfSynapsises++)
             {
                 Synapsis synapsis = neuron.inSynapsises[numberOfSynapsises];
-                synapsis.weight = momentumConstant * synapsis.prevDeltaWeight +
+                synapsis.weight += momentumConstant * synapsis.prevDeltaWeight +
                     learningDataRate * (double)neuron.localGradient * (double)neuron.weight;
             }
         }
