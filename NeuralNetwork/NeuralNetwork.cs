@@ -175,8 +175,8 @@ namespace NeuralNetwork
         public void train(double[] inputData,double[] desiredData,double learningDataRate,double momentumConstant=0)
         {
             double[] outputData = getResult(inputData);
-            double[] errors = getErrorSignal(desiredData, outputData);
-            updateSynapsisesWeight(errors, learningDataRate, momentumConstant);
+           // double[] errors = getErrorSignal(desiredData, outputData);
+        //    updateSynapsisesWeight(errors, learningDataRate, momentumConstant);
         }
 
         private void updateSynapsisesWeight(double[] errors, double learningDataRate, double momentumConstant)
@@ -194,7 +194,7 @@ namespace NeuralNetwork
                     }
                     else
                     {
-                        throw new Exception();
+                        throw new Exception("Нейрон не того типа");
                     }
                 }
             }
@@ -202,15 +202,39 @@ namespace NeuralNetwork
 
         private void getLocalGradientsForOutputLayer(double[] errors)
         {
-            Neuron[] outputLayar = network[network.Length - 1];
-
+            Neuron[] outputLayer = network[network.Length - 1];
+            for (int numberOfNeuron = 0; numberOfNeuron < outputLayer.Length; numberOfNeuron++)
+            {
+                if (outputLayer[numberOfNeuron] is OutputNeuron)
+                {
+                    OutputNeuron neuron = outputLayer[numberOfNeuron] as OutputNeuron;
+                    neuron.localGradient = errors[numberOfNeuron] * neuron.derivativeOfActivationFunction(neuron.getInducedLocalField());
+                }
+                else
+                {
+                    throw new Exception("Нейрон не того типа в выходном слое");
+                }
+            }
         }
 
         private void getLocalGradientsForHiddenLayer()
         {
             for (int numberOfLayer = 1; numberOfLayer < network.Length-1; numberOfLayer++)
             {
-                d
+                Neuron[] layer = network[numberOfLayer];
+                for (int numberOfNeuron = 0; numberOfNeuron < layer.Length; numberOfNeuron++)
+                {
+                    if (layer[numberOfNeuron] is HiddenNeuron)
+                    {
+                        HiddenNeuron neuron = layer[numberOfNeuron] as HiddenNeuron;
+                      //  neuron.localGradient=neuron.derivativeOfActivationFunction(neuron.getInducedLocalField())*
+
+                    }
+                    else
+                    {
+                        throw new Exception("Нейрон не того типа в выходном слое");
+                    }
+                } 
             }
         }
 

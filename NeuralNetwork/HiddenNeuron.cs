@@ -18,6 +18,15 @@ namespace NeuralNetwork
         public ActivationFunction derivativeOfActivationFunction;
         private double? weight_;
         public double? localGradient { get; set; }
+        public double getInducedLocalField()
+        {
+            double sum = 0;
+            foreach (var synapsis in inSynapsises)
+            {
+                sum += (double)(synapsis.weight * synapsis.inNeuron.weight);
+            }
+            return sum;
+        }
         public override double? weight
         {
             get
