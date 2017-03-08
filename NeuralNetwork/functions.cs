@@ -24,5 +24,14 @@ namespace NeuralNetwork
         {
             return Math.Pow(Math.Sinh(value),2);
         }
+        public static double sigmoid(double value)
+        {
+            return 1 / (1 + Math.Pow(Math.E, -value));
+        }
+        public static double derevativeOfSigmoid(double value)
+        {
+            double exp = Math.Pow(Math.E, value);
+            return exp / ((1 + exp)*(1+exp));
+        }
     }
 }

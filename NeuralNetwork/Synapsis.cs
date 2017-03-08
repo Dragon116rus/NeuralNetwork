@@ -4,12 +4,12 @@ namespace NeuralNetwork
 {
     internal class Synapsis
     {
-        private static Random random;
+        private static Random random=new Random();
         public Synapsis(Neuron inNeuron, Neuron outNeuron)
         {
             this.inNeuron = inNeuron;
             this.outNeuron = outNeuron;
-            this.weight_ = random.NextDouble() - 0.5;
+            this.weight_ =  (random.NextDouble() - 0.5);
         }
         public Synapsis(Neuron inNeuron, Neuron outNeuron,double weight)
         {

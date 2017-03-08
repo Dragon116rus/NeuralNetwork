@@ -198,7 +198,7 @@ namespace NeuralNetwork
 
         private void getLocalGradientsForHiddenLayer()
         {
-            for (int numberOfLayer = 1; numberOfLayer < network.Length - 1; numberOfLayer++)
+            for (int numberOfLayer = network.Length - 2; numberOfLayer >0 ; numberOfLayer--)
             {
                 Neuron[] layer = network[numberOfLayer];
                 for (int numberOfNeuron = 0; numberOfNeuron < layer.Length; numberOfNeuron++)
@@ -226,8 +226,9 @@ namespace NeuralNetwork
             for (int numberOfSynapsises = 0; numberOfSynapsises < countOfSynapsises; numberOfSynapsises++)
             {
                 Synapsis synapsis = neuron.inSynapsises[numberOfSynapsises];
+       
                 synapsis.weight += momentumConstant * synapsis.prevDeltaWeight +
-                    learningDataRate * (double)neuron.localGradient * (double)neuron.weight;
+                    learningDataRate * (double)neuron.localGradient * (double)synapsis.inNeuron.weight;
             }
         }
     }
