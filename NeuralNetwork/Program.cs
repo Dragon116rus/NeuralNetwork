@@ -10,71 +10,37 @@ namespace NeuralNetwork
     {
         static void Main(string[] args)
         {
-            NeuralNetwork nn = new NeuralNetwork(2,2,1);
+            NeuralNetwork nn = new NeuralNetwork(1,2, 1);
 
-            double[] oo = { 0, 0 };
-            double[] oi = { 0, 1 };
-            double[] io = { 1, 0 };
-            double[] ii = { 1, 1, };
-            double[] i = { 1 };
-            double[] o = { 0 };
-            double[] l = { -1 };
-            double learningRate = 0.55;
-            double momentumConstant = 0.00;
+            double learningRate = 0.000000000007;
+            double momentumConstant = 0;
             Random random = new Random();
-            for (int j = 0; j < 3200; j++)
+            for (int i = 0; i < 1000000; i++)
             {
-                //learningRate = learningRate / (j + 1);
-                //momentumConstant /= (j + 1);
-                if (j == 1000)
-                    ;
-                int rand = random.Next(4);
-                if ( rand== 3)
+                if (i % 100 == 1)
                 {
-                    nn.train(oi, i, learningRate, momentumConstant);
-
+                    getResult(nn);
                 }
-                if (rand == 2)
-                {
-                    nn.train(oo, o, learningRate, momentumConstant);
-
-                }
-                if (rand == 1)
-                {
-                    nn.train(io, i, learningRate, momentumConstant);
-
-                }
-                if (rand == 0)
-                    nn.train(ii, i, learningRate, momentumConstant);
-               
-                
-
-            }
-            foreach (var v in nn.getResult(0,0))
-            {
-                Console.Write("0 0=");
-                Console.WriteLine((int)(v + 0.5));
-                Console.WriteLine(v);
-            }
-            foreach (var v in nn.getResult(1,1))
-            {
-                Console.Write("1 1=");
-                Console.WriteLine((int)(v + 0.5));
-                Console.WriteLine(v);
-            }
-            foreach (var v in nn.getResult(0,1))
-            {
-                Console.Write("0 1=");
-                Console.WriteLine((int)(v + 0.5));
-                Console.WriteLine(v);
-            }
-            foreach (var v in nn.getResult(1, 0))
-            {
-                Console.Write("1 0=");
-                Console.WriteLine((int)(v+0.5));
-                Console.WriteLine(v);
+                double rand = random.Next(15);
+                double[] val = new double[1];
+                val[0] = rand;
+                nn.train(val, val, learningRate, momentumConstant);
             }
 
+        }
+        static void getResult(NeuralNetwork nn)
+        {
+            Random random = new Random();
+            double sum = 0;
+            for (int i = 0; i < 100; i++)
+            {
+                double rand = random.Next(15);
+                var res = nn.getResult(rand);
+                sum += (res[0] - rand) * (res[0] - rand);
+            //    Console.WriteLine(string.Format("{0}={1}", rand, res[0]));
+            }
+            Console.WriteLine(sum/100);
+            Console.WriteLine("-------------------------");
         }
     }
 }

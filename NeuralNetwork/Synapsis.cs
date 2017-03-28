@@ -11,11 +11,12 @@ namespace NeuralNetwork
             this.outNeuron = outNeuron;
             this.weight_ =  (random.NextDouble() - 0.5);
         }
-        public Synapsis(Neuron inNeuron, Neuron outNeuron,double weight)
+        public Synapsis(Neuron inNeuron, Neuron outNeuron,double weight,double prevDeltaWeight=0)
         {
             this.inNeuron = inNeuron;
             this.outNeuron = outNeuron;
             this.weight_ = weight;
+            this.prevDeltaWeight = prevDeltaWeight;
         }
         private double weight_;
         public double weight

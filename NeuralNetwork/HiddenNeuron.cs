@@ -18,18 +18,8 @@ namespace NeuralNetwork
         public ActivationFunction derivativeOfActivationFunction;
         private double? weight_;
         public double? localGradient { get; set; }
-        public double getInducedLocalField()
-        {
-            double sum = 0;
-            if (inSynapsises != null)
-            {
-                foreach (var synapsis in inSynapsises)
-                {
-                    sum += (double)(synapsis.weight * synapsis.inNeuron.weight);
-                }
-            }
-            return sum;
-        }
+        public double inducedLocalField;
+
         public double getDerivivativeOfSqrErrorEnergy()
         {
             double sum = 0;
@@ -72,6 +62,7 @@ namespace NeuralNetwork
             {
                 sum += (double)(synapsis.weight * synapsis.inNeuron.weight);
             }
+            inducedLocalField = sum;
             return activationFunction(sum);
         }
     }

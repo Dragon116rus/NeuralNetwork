@@ -11,5 +11,7 @@ namespace NeuralNetwork
         public virtual double? weight { get; set; }
         public Synapsis[] inSynapsises;
         public Synapsis[] outSynapsises;
+
+       
     }
 }
