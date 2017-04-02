@@ -16,7 +16,7 @@ namespace NeuralNetwork
 
             double momentumConstant = 0;
             Random random = new Random();
-            for (int i = 0; i < 1000000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 if (i % 100 == 1)
                 {

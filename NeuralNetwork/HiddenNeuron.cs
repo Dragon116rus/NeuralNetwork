@@ -8,16 +8,14 @@ namespace NeuralNetwork
 {
     class HiddenNeuron : Neuron
     {
-        public HiddenNeuron(double learningRate)
+        public HiddenNeuron()
         {
-            this.learningRate = learningRate;
             activationFunction = functions.sigmoid;
             derivativeOfActivationFunction = functions.derevativeOfSigmoid;
         }
         public delegate double ActivationFunction(double value);
         public ActivationFunction activationFunction;
         public ActivationFunction derivativeOfActivationFunction;
-        public double learningRate;
         private double? weight_;
         public double? localGradient { get; set; }
         public double inducedLocalField;
