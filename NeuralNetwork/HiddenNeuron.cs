@@ -8,14 +8,16 @@ namespace NeuralNetwork
 {
     class HiddenNeuron : Neuron
     {
-        public HiddenNeuron()
+        public HiddenNeuron(double learningRate)
         {
-            activationFunction = functions.tanh;
-            derivativeOfActivationFunction = functions.derivativeOfTanh;
+            this.learningRate = learningRate;
+            activationFunction = functions.sigmoid;
+            derivativeOfActivationFunction = functions.derevativeOfSigmoid;
         }
         public delegate double ActivationFunction(double value);
         public ActivationFunction activationFunction;
         public ActivationFunction derivativeOfActivationFunction;
+        public double learningRate;
         private double? weight_;
         public double? localGradient { get; set; }
         public double inducedLocalField;
@@ -57,8 +59,8 @@ namespace NeuralNetwork
         }
         private double proccessWeight()
         {
-            double sum=0;
-            foreach(var synapsis in inSynapsises)
+            double sum = 0;
+            foreach (var synapsis in inSynapsises)
             {
                 sum += (double)(synapsis.weight * synapsis.inNeuron.weight);
             }

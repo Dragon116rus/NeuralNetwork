@@ -8,7 +8,7 @@ namespace NeuralNetwork
 {
     class OutputNeuron:HiddenNeuron
     {
-        public OutputNeuron() {
+        public OutputNeuron(double learningRate):base(learningRate) {
             activationFunction = functions.linearWithoutKoef;
             derivativeOfActivationFunction = functions.derivativeOfLinearWithoutKoef;
         }

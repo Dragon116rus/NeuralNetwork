@@ -10,9 +10,10 @@ namespace NeuralNetwork
     {
         static void Main(string[] args)
         {
-            NeuralNetwork nn = new NeuralNetwork(1,2, 1);
 
-            double learningRate = 0.000000000007;
+            double learningRate = 0.0007;
+            NeuralNetwork nn = new NeuralNetwork(learningRate,1,1, 1);
+
             double momentumConstant = 0;
             Random random = new Random();
             for (int i = 0; i < 1000000; i++)
@@ -24,9 +25,9 @@ namespace NeuralNetwork
                 double rand = random.Next(15);
                 double[] val = new double[1];
                 val[0] = rand;
-                nn.train(val, val, learningRate, momentumConstant);
+                nn.train(val, val, momentumConstant);
             }
-
+            nn.synapsisesSerialize("1.txt");
         }
         static void getResult(NeuralNetwork nn)
         {

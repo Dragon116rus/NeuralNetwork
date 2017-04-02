@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace NeuralNetwork
     class NeuralNetwork : ICloneable
     {
         public Neuron[][] network;
-        public NeuralNetwork(params int[] countsOfNeuronsOnLayers)
+        public NeuralNetwork(double learningRate, params int[] countsOfNeuronsOnLayers)
         {
             network = new Neuron[countsOfNeuronsOnLayers.Length][];
             int numberOfOutputLayer = countsOfNeuronsOnLayers.Length - 1;
@@ -26,7 +27,7 @@ namespace NeuralNetwork
                 {
                     if (numberOfLayer == numberOfOutputLayer)
                     {
-                        network[numberOfLayer][numberOfNeuron] = new OutputNeuron();
+                        network[numberOfLayer][numberOfNeuron] = new OutputNeuron(learningRate);
                     }
                     else
                     {
@@ -39,7 +40,7 @@ namespace NeuralNetwork
                         {
                             if (numberOfLayer != numberOfInputLayer)
                             {
-                                network[numberOfLayer][numberOfNeuron] = new HiddenNeuron();
+                                network[numberOfLayer][numberOfNeuron] = new HiddenNeuron(learningRate);
                             }
                             else
                             {
@@ -138,11 +139,11 @@ namespace NeuralNetwork
 
         }
 
-        public void train(double[] inputData, double[] desiredData, double learningRate, double momentumConstant = 0)
+        public void train(double[] inputData, double[] desiredData, double momentumConstant = 0)
         {
             double[] outputData = getResult(inputData);
             double[] errors = getErrorSignal(desiredData, outputData);
-            updateSynapsisesWeight(errors, learningRate, momentumConstant);
+            updateSynapsisesWeight(errors, momentumConstant);
         }
 
         private double[] getErrorSignal(double[] desiredData, double[] outputData)
@@ -155,7 +156,7 @@ namespace NeuralNetwork
             return errorSignal;
         }
 
-        private void updateSynapsisesWeight(double[] errors, double learningRate, double momentumConstant)
+        private void updateSynapsisesWeight(double[] errors, double momentumConstant)
         {
             getLocalGradientsForOutputLayer(errors);
             getLocalGradientsForHiddenLayer();
@@ -166,7 +167,7 @@ namespace NeuralNetwork
                 {
                     if (layer[numberOfNeuron] is HiddenNeuron)
                     {
-                        updateInSynapsisesWeight(layer[numberOfNeuron] as HiddenNeuron, learningRate, momentumConstant);
+                        updateInSynapsisesWeight(layer[numberOfNeuron] as HiddenNeuron, momentumConstant);
                     }
                     else
                     {
@@ -220,20 +221,20 @@ namespace NeuralNetwork
             }
         }
 
-        private void updateInSynapsisesWeight(HiddenNeuron neuron, double learningRate, double momentumConstant)
+        private void updateInSynapsisesWeight(HiddenNeuron neuron, double momentumConstant)
         {
             int countOfSynapsises = neuron.inSynapsises.Length;
             for (int numberOfSynapsises = 0; numberOfSynapsises < countOfSynapsises; numberOfSynapsises++)
             {
                 Synapsis synapsis = neuron.inSynapsises[numberOfSynapsises];
                 synapsis.weight += momentumConstant * synapsis.prevDeltaWeight +
-                    learningRate * (double)neuron.localGradient* (double)synapsis.inNeuron.weight;
+                    neuron.learningRate * (double)neuron.localGradient * (double)synapsis.inNeuron.weight;
             }
         }
 
         public object Clone()
         {
-            NeuralNetwork newNetwork = new NeuralNetwork();
+            NeuralNetwork newNetwork = new NeuralNetwork(0.0);
             newNetwork.network = new Neuron[network.Length][];
             createNeurons(ref newNetwork.network);
             copySynapsises(ref newNetwork.network);
@@ -285,15 +286,18 @@ namespace NeuralNetwork
                 newNeurons[numberOfLayer] = new Neuron[oldNetworkLayer.Length];
                 for (int numberOfNeuron = 0; numberOfNeuron < oldNetworkLayer.Length; numberOfNeuron++)
                 {
+                    
                     if (oldNetworkLayer[numberOfNeuron] is OutputNeuron)
                     {
-                        newNeurons[numberOfLayer][numberOfNeuron] = new OutputNeuron();
+                        OutputNeuron oldNeuron = network[numberOfLayer][numberOfNeuron] as OutputNeuron;
+                        newNeurons[numberOfLayer][numberOfNeuron] = new OutputNeuron(oldNeuron.learningRate);
                     }
                     else
                     {
                         if (oldNetworkLayer[numberOfNeuron] is HiddenNeuron)
                         {
-                            newNeurons[numberOfLayer][numberOfNeuron] = new HiddenNeuron();
+                            HiddenNeuron oldNeuron = network[numberOfLayer][numberOfNeuron] as HiddenNeuron;
+                            newNeurons[numberOfLayer][numberOfNeuron] = new HiddenNeuron(oldNeuron.learningRate);
                         }
                         else
                         {
@@ -309,6 +313,33 @@ namespace NeuralNetwork
                     }
                 }
 
+            }
+        }
+
+        public void synapsisesSerialize(string path)
+        {
+            using (StreamWriter sw = new StreamWriter(path))
+            {
+                for (int numberOfLayer = 0; numberOfLayer < network.Length; numberOfLayer++)
+                {
+                    sw.Write(string.Format("{0} ", network[numberOfLayer].Length));
+                }
+                sw.WriteLine();
+                for (int numberOfLayer = 1; numberOfLayer < network.Length; numberOfLayer++)
+                {
+                    Neuron[] layer = network[numberOfLayer];
+                    for (int numberOfNeuron = 0; numberOfNeuron < layer.Length - 1; numberOfNeuron++)
+                    {
+                        HiddenNeuron neuron = (HiddenNeuron)layer[numberOfNeuron];
+                        for (int numberOfSynapsis = 0; numberOfSynapsis < neuron.outSynapsises.Length; numberOfSynapsis++)
+                        {
+                            sw.Write(string.Format("{0} {1} {2}:", neuron.inSynapsises[numberOfSynapsis].weight,
+                                neuron.inSynapsises[numberOfSynapsis].prevDeltaWeight,
+                                neuron.learningRate));
+                        }
+                        sw.WriteLine();
+                    }
+                }
             }
         }
     }
