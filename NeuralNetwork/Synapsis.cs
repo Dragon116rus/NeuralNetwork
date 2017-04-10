@@ -4,7 +4,7 @@ namespace NeuralNetwork
 {
     internal class Synapsis
     {
-        private static Random random = new Random();
+        public static Random random = new Random();
         public Synapsis(Neuron inNeuron, Neuron outNeuron, double learningRate)
         {
             this.learningRate = learningRate;
@@ -33,7 +33,8 @@ namespace NeuralNetwork
                 weight_ = value;
             }
         }
-        public double prevDeltaWeight { get; private set; }
+        public double prevDeltaWeight { get; set; }
+        public int directory = 0;
         public Neuron inNeuron;
         public Neuron outNeuron;
     }

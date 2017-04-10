@@ -227,11 +227,37 @@ namespace NeuralNetwork
             for (int numberOfSynapsises = 0; numberOfSynapsises < countOfSynapsises; numberOfSynapsises++)
             {
                 Synapsis synapsis = neuron.inSynapsises[numberOfSynapsises];
-                synapsis.weight += momentumConstant * synapsis.prevDeltaWeight +
+                double delta = momentumConstant * synapsis.prevDeltaWeight +
                     synapsis.learningRate * (double)neuron.localGradient * (double)synapsis.inNeuron.weight;
+                synapsis.weight += delta;
+
+
+                if (Math.Abs(delta + synapsis.prevDeltaWeight) > Math.Abs(delta - synapsis.prevDeltaWeight))
+                {
+                    synapsis.directory++;
+                }
+                else
+                {
+                    synapsis.directory--;
+                }
+                if (synapsis.directory > 1000)
+                {
+                    synapsis.directory = 0;
+                    synapsis.learningRate *= 1.01;
+                }
+                if (synapsis.directory < -1000)
+                {
+                    synapsis.directory = 0;
+                    synapsis.learningRate /= 1.01;
+                }
+                //if (Synapsis.random.Next(1000000) == 153)
+                //{
+                //    synapsis.weight = Synapsis.random.NextDouble() - 0.5;
+
+                //}
             }
         }
-
+        #region Clone
         public object Clone()
         {
             NeuralNetwork newNetwork = new NeuralNetwork(0.0);
@@ -316,7 +342,8 @@ namespace NeuralNetwork
 
             }
         }
-
+        #endregion Clone
+        #region Synapsises Serialize
         public void synapsisesSerialize(string path)
         {
             using (StreamWriter sw = new StreamWriter(path))
@@ -332,7 +359,7 @@ namespace NeuralNetwork
                     for (int numberOfNeuron = 0; numberOfNeuron < layer.Length; numberOfNeuron++)
                     {
                         Neuron neuron = layer[numberOfNeuron];
-                        sw.Write("{0}:", neuron.ToString());
+                      //  sw.Write("{0}:", neuron.ToString());
                         for (int numberOfSynapsis = 0; numberOfSynapsis < neuron.outSynapsises.Length; numberOfSynapsis++)
                         {
                             Synapsis synapsis = neuron.outSynapsises[numberOfSynapsis];
@@ -340,10 +367,57 @@ namespace NeuralNetwork
                                 synapsis.prevDeltaWeight,
                                 synapsis.learningRate));
                         }
-                        sw.WriteLine();
+                       
+                    }
+                    sw.WriteLine();
+                }
+            }
+        }
+        public void synapsisesDeserialize(string path)
+        {
+            using (StreamReader sr=new StreamReader(path))
+            {
+                string line = sr.ReadLine();
+                string[] splitedLine = line.Split((new char[]{' '}), StringSplitOptions.RemoveEmptyEntries);
+                if (splitedLine.Length!=network.Length)
+                {
+                    throw new Exception("Несовпадение размеров сетей");
+                }
+                for (int numberOfLayer = 0; numberOfLayer < splitedLine.Length; numberOfLayer++)
+                {
+                    int countOfNeuron=0;
+                    if (!int.TryParse(splitedLine[numberOfLayer],out countOfNeuron) || countOfNeuron!=network[numberOfLayer].Length)
+                    {
+                        throw new Exception("Несовпадение размеров сетей");
+                    }
+                }               
+                for (int numberOfLayer = 0; numberOfLayer < network.Length - 1; numberOfLayer++)
+                {
+                    line = sr.ReadLine();
+                    splitedLine = line.Split((new char[] { ':' }), StringSplitOptions.RemoveEmptyEntries);
+                    Neuron[] layer = network[numberOfLayer];
+                    for (int numberOfNeuron = 0; numberOfNeuron < layer.Length; numberOfNeuron++)
+                    {
+                        Neuron neuron = layer[numberOfNeuron];
+                        string[] doubleSplitedLine=splitedLine[numberOfNeuron].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        for (int numberOfSynapsis = 0; numberOfSynapsis < neuron.outSynapsises.Length; numberOfSynapsis++)
+                        {
+                            Synapsis synapsis = neuron.outSynapsises[numberOfSynapsis];
+                            double weight, prevDeltaWeight, learningRate;
+                            if (double.TryParse(doubleSplitedLine[0],out weight) &&
+                                double.TryParse(doubleSplitedLine[1], out prevDeltaWeight) &&
+                                double.TryParse(doubleSplitedLine[2], out learningRate))
+                            {
+                                synapsis.weight = weight;
+                                synapsis.prevDeltaWeight = prevDeltaWeight;
+                                synapsis.learningRate = learningRate;
+                            }
+                        }
+                        
                     }
                 }
             }
         }
+        #endregion  Synapsises Serialize
     }
 }

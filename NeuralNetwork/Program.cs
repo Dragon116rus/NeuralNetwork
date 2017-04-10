@@ -11,12 +11,12 @@ namespace NeuralNetwork
         static void Main(string[] args)
         {
 
-            double learningRate = 0.0007;
-            NeuralNetwork nn = new NeuralNetwork(learningRate,1,1, 1);
-
+            double learningRate = 0.005;
+            NeuralNetwork nn = new NeuralNetwork(learningRate, 1, 2, 1);
+            nn.synapsisesDeserialize("1.txt");
             double momentumConstant = 0;
             Random random = new Random();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 500000; i++)
             {
                 if (i % 100 == 1)
                 {
@@ -25,9 +25,12 @@ namespace NeuralNetwork
                 double rand = random.Next(15);
                 double[] val = new double[1];
                 val[0] = rand;
+              //  Console.WriteLine(rand);
+              //  Console.WriteLine(nn.getResult(rand)[0]);
                 nn.train(val, val, momentumConstant);
             }
             nn.synapsisesSerialize("1.txt");
+
         }
         static void getResult(NeuralNetwork nn)
         {
@@ -38,9 +41,9 @@ namespace NeuralNetwork
                 double rand = random.Next(15);
                 var res = nn.getResult(rand);
                 sum += (res[0] - rand) * (res[0] - rand);
-            //    Console.WriteLine(string.Format("{0}={1}", rand, res[0]));
+                //    Console.WriteLine(string.Format("{0}={1}", rand, res[0]));
             }
-            Console.WriteLine(sum/100);
+            Console.WriteLine(sum / 100);
             Console.WriteLine("-------------------------");
         }
     }
