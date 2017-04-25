@@ -10,7 +10,7 @@ namespace NeuralNetwork
             this.learningRate = learningRate;
             this.inNeuron = inNeuron;
             this.outNeuron = outNeuron;
-            this.weight_ = (random.NextDouble()*3 - 0.5);
+            this.weight_ = (random.NextDouble() - 0.5);
         }
         public Synapsis(Neuron inNeuron, Neuron outNeuron, double learningRate, double weight, double prevDeltaWeight = 0)
         {

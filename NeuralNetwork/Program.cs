@@ -17,18 +17,18 @@ namespace NeuralNetwork
         static void Main(string[] args)
         {
 
-            double learningRate = 0.015;
-            nn = new NeuralNetwork(learningRate, 41, 41, 2);
+            double learningRate = 0.0015;
+            nn = new NeuralNetwork(learningRate, 41, 41,20, 2);
 
 
             Console.WriteLine("deserialization");
             //nn.synapsisesDeserialize("1.txt");
 
             Console.WriteLine("loanding samples");
-            loadSamples(5000, 5000);
+            loadSamples(1, 1);
 
             Console.WriteLine("training");
-            training(50);
+            training(5000);
 
             Console.WriteLine("testing");
             testing();
