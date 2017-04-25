@@ -17,18 +17,18 @@ namespace NeuralNetwork
         static void Main(string[] args)
         {
 
-            double learningRate = 0.0015;
+            double learningRate = 0.015;
             nn = new NeuralNetwork(learningRate, 41, 41,20, 2);
 
 
             Console.WriteLine("deserialization");
-            //nn.synapsisesDeserialize("1.txt");
+            nn.synapsisesDeserialize("1.txt");
 
             Console.WriteLine("loanding samples");
-            loadSamples(1, 1);
+            loadSamples(501, 501);
 
             Console.WriteLine("training");
-            training(5000);
+            training(1);
 
             Console.WriteLine("testing");
             testing();
@@ -100,8 +100,8 @@ namespace NeuralNetwork
                         sample[j] = value;
                     }
                     double[] result = nn.activation(sample);
-                    if (all % 1000 == 0)
-                        Console.WriteLine("{0}:{1} answer={2}:{3}\n{4}", result[0], result[1], answer[0], answer[1], features[features.Length - 1]);
+                //    if (all % 1000 == 0)
+                 //       Console.WriteLine("{0}:{1} answer={2}:{3}\n{4}", result[0], result[1], answer[0], answer[1], features[features.Length - 1]);
                     if (Math.Round(result[0]) == 0 && Math.Round(result[1]) == 1)
                     {
                         if (isDdos)
@@ -162,7 +162,7 @@ namespace NeuralNetwork
                     int rnd = shuffeledArray[j];
                     error += nn.train(samples[rnd], answers[rnd]);
                 }
-                Console.WriteLine(error/length);
+                Console.WriteLine("{0} error={1}",i,error/length);
                 if (i % frequencyOfSerialization == 0)
                 {
                     Console.WriteLine("serialization");
