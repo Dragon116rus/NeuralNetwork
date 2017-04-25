@@ -139,11 +139,18 @@ namespace NeuralNetwork
 
         }
 
-        public void train(double[] inputData, double[] desiredData, double momentumConstant = 0)
+        public double train(double[] inputData, double[] desiredData, double momentumConstant = 0)
         {
             double[] outputData = activation(inputData);
             double[] errors = getErrorSignal(desiredData, outputData);
+            double error = 0;
+            for (int i = 0; i < errors.Length; i++)
+            {
+                error += errors[i] * errors[i];
+            }
+            error = Math.Sqrt(error / errors.Length);
             updateSynapsisesWeight(errors, momentumConstant);
+            return error;
         }
 
         private double[] getErrorSignal(double[] desiredData, double[] outputData)
