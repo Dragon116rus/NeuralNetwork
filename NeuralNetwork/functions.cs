@@ -26,10 +26,10 @@ namespace NeuralNetwork
         }
         public static double derivativeOfTanh(double value)
         {
-            //double pExp = Math.Pow(e, value);
-            //double mExp = Math.Pow(e, -value);
-            //return (pExp-mExp)* (pExp - mExp)/4;
-            return Math.Pow(Math.Sinh(value), 2);
+            double pExp = Math.Pow(e, value);
+            double mExp = Math.Pow(e, -value);
+            return 4/(pExp-mExp)* (pExp - mExp);
+           // return Math.Pow(Math.Sinh(value), 2);
         }
         public static double sigmoid(double value)
         {
