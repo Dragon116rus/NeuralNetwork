@@ -13,29 +13,46 @@ namespace NeuralNetwork
         static double[][] samples;
         static double[][] answers;
         static NeuralNetwork nn;
-        static string serializePath = "1.txt";
+        static string serializePath = "2.txt";
         static void Main(string[] args)
         {
 
             double learningRate = 0.015;
-            nn = new NeuralNetwork(learningRate, 41, 41,20, 2);
+            nn = new NeuralNetwork(learningRate, 41, 41, 20, 2);
 
 
-            Console.WriteLine("deserialization");
-            nn.synapsisesDeserialize("1.txt");
+          //  Console.WriteLine("deserialization");
+        //   nn.synapsisesDeserialize("2.txt");
 
             Console.WriteLine("loanding samples");
-            loadSamples(501, 501);
+            loadSamples(5001, 1001);
 
             Console.WriteLine("training");
-            training(1);
+            training(10, 1);
 
             Console.WriteLine("testing");
             testing();
-
+            // show();
             Console.ReadKey();
         }
-
+        private static void show()
+        {
+            using (StreamReader sr = new StreamReader("C:\\Users\\Dragon116rus\\Downloads\\kddcup.data_10_percent\\kddcup.data.corrected"))
+            {
+                string line;
+                for (int i = 0; i < 60000; i++)
+                {
+                    sr.ReadLine();
+                }
+                for (int i = 0; i < 10000; i++)
+                {
+                    line = sr.ReadLine();
+                    Console.WriteLine(line);
+                }
+                //    while ((line = sr.ReadLine()) != null)
+                //       Console.WriteLine(line);
+            }
+        }
         private static void testing()
         {
             int ddosGood = 0;
@@ -47,7 +64,7 @@ namespace NeuralNetwork
             double[] answer;
             double[] sample;
             bool isDdos = false;
-            using (StreamReader sr = new StreamReader("C:\\Users\\Dragon116rus\\Downloads\\kddcup.data_10_percent\\kddcup.data.corrected"))
+            using (StreamReader sr = new StreamReader("C:\\Users\\Dragon116rus\\Downloads\\kddcup.data_10_percent\\corrected\\corrected"))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
@@ -100,8 +117,8 @@ namespace NeuralNetwork
                         sample[j] = value;
                     }
                     double[] result = nn.activation(sample);
-                //    if (all % 1000 == 0)
-                 //       Console.WriteLine("{0}:{1} answer={2}:{3}\n{4}", result[0], result[1], answer[0], answer[1], features[features.Length - 1]);
+                    //    if (all % 1000 == 0)
+                    //       Console.WriteLine("{0}:{1} answer={2}:{3}\n{4}", result[0], result[1], answer[0], answer[1], features[features.Length - 1]);
                     if (Math.Round(result[0]) == 0 && Math.Round(result[1]) == 1)
                     {
                         if (isDdos)
@@ -131,6 +148,8 @@ namespace NeuralNetwork
                             unknown++;
                         }
                     }
+
+                    all++;
                     if (all % 1000 == 0)
                     {
                         Console.WriteLine("all:{0}", all);
@@ -138,7 +157,6 @@ namespace NeuralNetwork
                         Console.WriteLine("ddos detected:{0} ddos invalid:{1}", ddosGood, ddosInvalid);
                         Console.WriteLine("unknown:{0}", unknown);
                     }
-                    all++;
                 }
             }
         }
@@ -161,8 +179,12 @@ namespace NeuralNetwork
                 {
                     int rnd = shuffeledArray[j];
                     error += nn.train(samples[rnd], answers[rnd]);
+                    if (j % 1000 == 0)
+                    {
+                        Console.WriteLine("training: epoch: {0}, completed: {1} / {2}", i, j, length);
+                    }
                 }
-                Console.WriteLine("{0} error={1}",i,error/length);
+                Console.WriteLine("{0} error={1}", i, error / length);
                 if (i % frequencyOfSerialization == 0)
                 {
                     Console.WriteLine("serialization");
@@ -171,10 +193,11 @@ namespace NeuralNetwork
             }
         }
 
-        private static void loadSamples(int normalSamples, int ddosSamples)
+        private static void loadSamples(int normalSamples, int countOfEachDdosAttacks)
         {
-            samples = new double[normalSamples + ddosSamples][];
-            answers = new double[normalSamples + ddosSamples][];
+            samples = new double[normalSamples + countOfEachDdosAttacks * 6][];
+            answers = new double[normalSamples + countOfEachDdosAttacks * 6][];
+            SortedDictionary<string, int> ddosSamplesCount = new SortedDictionary<string, int>();
             using (StreamReader sr = new StreamReader("C:\\Users\\Dragon116rus\\Downloads\\kddcup.data_10_percent\\kddcup.data.corrected"))
             {
                 int i = 0;
@@ -191,12 +214,20 @@ namespace NeuralNetwork
                     if (answer == "back." || answer == "neptune." || answer == "pod." ||
                         answer == "smurf." || answer == "teardrop." || answer == "land.")
                     {
-                        if (ddosSamples <= 0)
+                        if (ddosSamplesCount.ContainsKey(answer))
                         {
-                            continue;
+                            if (ddosSamplesCount[answer] >= countOfEachDdosAttacks)
+                            {
+                                continue;
+                            }
+                          
+                            ddosSamplesCount[answer]++;
+                        }
+                        else
+                        {
+                            ddosSamplesCount.Add(answer, 1);
                         }
                         answers[i] = new double[2] { 0, 1 };
-                        ddosSamples--;
                     }
                     else
                     {
@@ -236,12 +267,14 @@ namespace NeuralNetwork
                         }
                         samples[i][j] = value;
                     }
-                    if (ddosSamples == 0 && normalSamples == 0)
+                    if (countOfEachDdosAttacks == 0 && normalSamples == 0)
                     {
                         break;
                     }
                     i++;
                 }
+                Array.Resize(ref samples, i-1);
+                Array.Resize(ref answers, i-1);
             }
         }
 

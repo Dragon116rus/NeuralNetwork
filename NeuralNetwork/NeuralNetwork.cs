@@ -245,24 +245,24 @@ namespace NeuralNetwork
                 synapsis.weight += delta;
 
 
-                //if (Math.Abs(delta + synapsis.prevDeltaWeight) > Math.Abs(delta - synapsis.prevDeltaWeight))
-                //{
-                //    synapsis.directory++;
-                //}
-                //else
-                //{
-                //    synapsis.directory--;
-                //}
-                //if (synapsis.directory > 1000)
-                //{
-                //    synapsis.directory = 0;
-                //    synapsis.learningRate *= 1.01;
-                //}
-                //if (synapsis.directory < -1000)
-                //{
-                //    synapsis.directory = 0;
-                //    synapsis.learningRate /= 1.01;
-                //}
+                if (Math.Abs(delta + synapsis.prevDeltaWeight) > Math.Abs(delta - synapsis.prevDeltaWeight))
+                {
+                    synapsis.directory++;
+                }
+                else
+                {
+                    synapsis.directory--;
+                }
+                if (synapsis.directory > 1000)
+                {
+                    synapsis.directory = 0;
+                    synapsis.learningRate *= 1.01;
+                }
+                if (synapsis.directory < -1000)
+                {
+                    synapsis.directory = 0;
+                    synapsis.learningRate /= 1.01;
+                }
                 //if (Synapsis.random.Next(1000000) == 153)
                 //{
                 //    synapsis.weight = Synapsis.random.NextDouble() - 0.5;
